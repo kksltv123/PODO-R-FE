@@ -17,7 +17,7 @@ import { useState } from 'react';
 
 const cache = new CellMeasurerCache({
     defaultWidth: 100,
-    fixedWidth: true
+    fixedWidth: true,
 });
 
 

@@ -646,6 +646,7 @@ const Selector = ({ handleModal, theaterId }) => {
 
     window.onpopstate = function() {
         navigate("/")
+        window.location.reload()
     }
 
 

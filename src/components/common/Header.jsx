@@ -19,10 +19,12 @@ const Header = () => {
   const onClickHandler = () => {
     setEachMusicalId('')
     navigate("/");
+    window.location.reload()
   };
   const onGoBack = () =>{
     setEachMusicalId('')
     navigate("/");
+    window.location.reload()
   }
   return (
     <StHeader>
