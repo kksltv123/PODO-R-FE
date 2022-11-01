@@ -20,15 +20,47 @@ const cache = new CellMeasurerCache({
     fixedWidth: true,
 });
 
+type Props = {
+    handleModal: Function;
+    tagUrl: string,
+};
 
-const Review = ({ handleModal, tagUrl }) => {
+type rowRendererProps = {
+    index: number
+    key: string
+    parent: any
+    style: any
+};
+
+type dataObject = {
+    reviewId : string,
+    musicalId : string,
+    imgUrl : string,
+    heartChecked : boolean,
+    heartCount : number,
+    commentCount : number,
+    grade : string,
+    floor : string,
+    section : string,
+    row : string,
+    seat : string,
+    createdAt : string, 
+    evaluation : {
+        gap : number,
+        sight : number,
+        sound  : number,
+        light  : number,
+    },
+}
+
+const Review: React.FC<Props> = ({ handleModal, tagUrl }) => {
     // 현재 페이지 url에서 musicalId값을 받아온다.
     let location = useLocation();
     let musicalId = location.pathname.split('/').splice(2, 1).toString()
     const [render, setRender] = useState(false);
-    useEffect(()=> {setTimeout(() => {setRender(true)},[1000])},[])
+    useEffect(()=> {setTimeout(() => {setRender(true)}, 1000)},[])
 
-    const fetchReviews = async (pageParam, musicalId, tagUrl) => {
+    const fetchReviews = async (pageParam: number, musicalId: string, tagUrl: string) => {
         const res = await apis.getReview(musicalId, pageParam, tagUrl)
         
         const data = res.data.content;
@@ -43,7 +75,7 @@ const Review = ({ handleModal, tagUrl }) => {
 
 
 
-    const { ref, inView } = useInView('');
+    const { ref, inView } = useInView();//""
     const listRef = useRef(null);
     const [rowCount, setRowCount] = useState(0);
 
@@ -68,14 +100,14 @@ const Review = ({ handleModal, tagUrl }) => {
             }
         )
 
-    const rowRenderer = ({ index, key, parent, style }) => {
+    const rowRenderer: React.FC<rowRendererProps> = ({ index, key, parent, style }) => {
         return (
             <CellMeasurer cache={cache} parent={parent} key={key} columnIndex={0} rowIndex={index}>
                 <div style={style}>
                     <StWrap key={key}>
                         <Fragment>
-                            {data?.pages[index].data.map((data) => {
-                                const changeToDate = (datetime) => {
+                            {data?.pages[index].data.map((data: dataObject) => {
+                                const changeToDate = (datetime: any) => {
                                     // 오늘 날짜
                                     let now = moment(new Date())
                                     // 오늘과의 시간 차이
@@ -83,31 +115,30 @@ const Review = ({ handleModal, tagUrl }) => {
                                     // 변환
                                     // asSeconds 를 하면 오늘과의 시간차이를 
                                     // 초단위로 float datatype 으로 보여준다 (3.82 이런식)
-                                    let seconds = duration.asSeconds()
-                                    let minute = duration.asMinutes()
-                                    let hours = duration.asHours()
-                                    let days = duration.asDays()
-                                    let weeks = duration.asWeeks()
-                                    let month = duration.asMonths()
-                                    let year = duration.asYears()
+                                    let minute = duration.asMinutes().toString()
+                                    let hours = duration.asHours().toString()
+                                    let days = duration.asDays().toString()
+                                    let weeks = duration.asWeeks().toString()
+                                    let month = duration.asMonths().toString()
+                                    let year = duration.asYears().toString()
 
                                     // 그래서 사용할 때는 parseInt 를 사용해 int 로 바꿔야 한다. 
-                                    if (minute < 1) {
+                                    if (parseInt(minute) < 1) {
                                         // 1분 미만이면 초 단위로 보여주고,  
                                         return '방금 전'
-                                    } else if (hours < 1) {
+                                    } else if (parseInt(hours) < 1) {
                                         // 1시간 미만이면 분 단위로 보여주고
                                         return parseInt(minute) + '분 전'
-                                    } else if (hours < 24) {
+                                    } else if (parseInt(hours) < 24) {
                                         // 하루 미만이면 시간으로 보여주고
                                         return parseInt(hours) + '시간 전'
-                                    } else if (weeks < 1) {
+                                    } else if (parseInt(weeks) < 1) {
                                         // 일주일 미만이면 일 단위로 보여주고
                                         return parseInt(days) + '일 전'
-                                    } else if (month < 1) {
+                                    } else if (parseInt(month) < 1) {
                                         // 한 달 미만이면 주 단위로 보여주고
                                         return parseInt(weeks) + '주 전'
-                                    } else if (year < 1) {
+                                    } else if (parseInt(year) < 1) {
                                         // 1년 미만이면 달 단위로 보여주고
                                         return parseInt(month) + '달 전'
                                     } else {
@@ -169,14 +200,14 @@ const Review = ({ handleModal, tagUrl }) => {
 
 
     if (status === 'loading') { return <h2>Loading...</h2> }
-    if (status === 'error') { return <h2>Error: {error.message}</h2> }
+    // if (status === 'error') { return <h2>Error: {error.message}</h2> }
 
     return (
         <div>
             <WindowScroller>
-                {({ height, scrollTop, isScrolling, onChildScroll }) => (
+                {({ height, scrollTop, isScrolling, onChildScroll }: any) => (
                     <AutoSizer disableHeight>
-                        {({ width }) => {
+                        {({ width }: any) => {
                             return(
                             <List
                                 ref={listRef}
@@ -251,7 +282,7 @@ const StReviewDiv = styled.div`
     }
 `
 
-const StThumbDiv = styled.div`
+const StThumbDiv = styled.div<{imgUrl : string}>`
     width: 250px;
     height: 250px;
     border-radius: 20px 20px 0px 0px;

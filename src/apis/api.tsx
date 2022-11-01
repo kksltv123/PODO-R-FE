@@ -23,6 +23,7 @@ axiosApi.interceptors.request.use(
   async config => {
     
     const token = window.localStorage.getItem("accessToken")
+    if(!config.headers) config.headers = {};
     if(token){
       config.headers.Authorization = token
     }
@@ -40,16 +41,18 @@ axiosApi.interceptors.response.use(
    async (error) => {
     if(error.response?.status === 401){
       const refreshToken = window.localStorage.getItem("refreshToken")
-      const reissue = {"Refresh-Token" : refreshToken}
+      const reissue = {"Refresh-Token" : refreshToken!}
 
       const res = await axios.post(`${URI.baseURL}/api/reissue`,{} ,{headers : reissue})
         .catch((err)=>{
           localStorage.clear();
           alert(err.response.data)
           window.location.replace("/")
-        }) 
-        localStorage.setItem("accessToken", res.headers.authorization);
-        localStorage.setItem("refreshToken", res.headers[`refresh-token`]);
+        })
+        if(res) {
+          localStorage.setItem("accessToken", res.headers.authorization);
+          localStorage.setItem("refreshToken", res.headers[`refresh-token`]);
+        } 
         
         return await axiosApi.request(error.config).catch((error) => {
           return Promise.reject(error);

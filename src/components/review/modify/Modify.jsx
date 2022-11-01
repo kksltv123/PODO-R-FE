@@ -213,7 +213,7 @@ const Modify = ({ data, setModify }) => {
 
 
     const postModifyedReviews = async(json) => {
-        await apis.putModify(musicalId, data, json)
+        await apis.putModify(musicalId, data.data.reviewId, json)
         .then(
             (response)=>{
                 setModify(false)
